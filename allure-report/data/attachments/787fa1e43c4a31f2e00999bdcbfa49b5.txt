@@ -1,0 +1,24 @@
+
+> ria-automation-assesment@1.0.0 test
+> playwright test
+
+
+[2mRunning [22m16[2m tests using [22m5[2m workers[22m
+
+[1A[2K[1/16] [chromium] › tests/api/reques.spec.js:36:7 › Reqres API Tests › list all users
+[1A[2K[2/16] [chromium] › tests/api/reques.spec.js:21:7 › Reqres API Tests › invalid login
+[1A[2K[3/16] [chromium] › tests/ui/regression.spec.js:8:9 › Login Functionality › should login successfully with valid credentials
+[1A[2K[4/16] [chromium] › tests/api/reques.spec.js:5:8 › Reqres API Tests › successful login
+[1A[2K[5/16] [chromium] › tests/ui/regression.spec.js:16:9 › Login Functionality › should show error message with invalid credentials
+[1A[2K[6/16] [chromium] › tests/ui/regression.spec.js:32:9 › Inventory Functionality › should add item to cart successfully
+[1A[2K[7/16] [chromium] › tests/ui/regression.spec.js:39:9 › Inventory Functionality › should add multiple items to cart successfully
+[1A[2K[8/16] [chromium] › tests/ui/regression.spec.js:47:9 › Inventory Functionality ›  login → add an item to cart → checkout → verify completion
+[1A[2K[9/16] [firefox] › tests/api/reques.spec.js:5:8 › Reqres API Tests › successful login
+[1A[2K[10/16] [firefox] › tests/api/reques.spec.js:21:7 › Reqres API Tests › invalid login
+[1A[2K[11/16] [firefox] › tests/api/reques.spec.js:36:7 › Reqres API Tests › list all users
+[1A[2K[12/16] [firefox] › tests/ui/regression.spec.js:8:9 › Login Functionality › should login successfully with valid credentials
+[1A[2K[13/16] [firefox] › tests/ui/regression.spec.js:16:9 › Login Functionality › should show error message with invalid credentials
+[1A[2K[14/16] [firefox] › tests/ui/regression.spec.js:32:9 › Inventory Functionality › should add item to cart successfully
+[1A[2K[15/16] [firefox] › tests/ui/regression.spec.js:39:9 › Inventory Functionality › should add multiple items to cart successfully
+[1A[2K[16/16] [firefox] › tests/ui/regression.spec.js:47:9 › Inventory Functionality ›  login → add an item to cart → checkout → verify completion
+[1A[2K[32m  16 passed[39m[2m (19.9s)[22m
