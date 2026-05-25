@@ -1,14 +1,16 @@
 {
-  "name": "ria-automation-assesment",
+  "name": "ria-automation-assessment",
   "version": "1.0.0",
-  "description": "",
+  "description": "Playwright E2E test suite for SauceDemo UI and ReqRes API",
   "main": "index.js",
   "scripts": {
-    "test:headed": "playwright test --headed",
     "test": "playwright test",
-    "ui-test": "playwright test tests/ui",
-    "api-test": "playwright test tests/api",
-    "tests:allure": "allure run -- npm run test && allure open"
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test tests/ui",
+    "test:api": "playwright test tests/api",
+    "allure:generate": "allure generate allure-results --clean -o allure-report",
+    "allure:open": "allure open allure-report",
+    "allure:report": "npm run allure:generate && npm run allure:open"
   },
   "keywords": [],
   "author": "",
