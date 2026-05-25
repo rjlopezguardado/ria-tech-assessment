@@ -7,69 +7,73 @@ on:
     branches: [main, master]
 
 jobs:
-  test:
-    name: ${{ matrix.suite }} tests
-    timeout-minutes: 30
+  ui-test:
     runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        suite: [api, ui]
-
-    env:
-      CI: true
-      UI_URL: ${{ secrets.UI_URL }}
-      API_URL: ${{ secrets.API_URL }}
-      API_TOKEN: ${{ secrets.API_TOKEN }}
-      VALID_API_USERNAME: ${{ secrets.VALID_API_USERNAME }}
-      VALID_API_PASSWORD: ${{ secrets.VALID_API_PASSWORD }}
-      INVALID_API_USERNAME: ${{ secrets.INVALID_API_USERNAME }}
-      INVALID_API_PASSWORD: ${{ secrets.INVALID_API_PASSWORD }}
-      VALID_UI_USERNAME: ${{ secrets.VALID_UI_USERNAME }}
-      VALID_UI_PASSWORD: ${{ secrets.VALID_UI_PASSWORD }}
-      INVALID_UI_USERNAME: ${{ secrets.INVALID_UI_USERNAME }}
-      INVALID_UI_PASSWORD: ${{ secrets.INVALID_UI_PASSWORD }}
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - with:
+      - node-version: "20"
+      - run: npm install
+      - run: npx playwright install --with-deps
+      - run: npx playwright test --project=msedge --project=create-recorded
+      - env:
+          UI_URL: ${{ secrets.UI_URL }}
+          VALID_UI_USERNAME: ${{ secrets.VALID_UI_USERNAME }}
+          VALID_UI_PASSWORD: ${{ secrets.VALID_UI_PASSWORD }}
+          INVALID_UI_USERNAME: ${{ secrets.INVALID_UI_USERNAME }}
+          INVALID_UI_PASSWORD: ${{ secrets.INVALID_UI_PASSWORD }}
+      - uses: actions/upload-artifact@v4
         with:
-          node-version: lts/*
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Cache Playwright browsers
-        if: matrix.suite == 'ui'
-        id: playwright-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
-
-      - name: Install Playwright browsers
-        if: matrix.suite == 'ui' && steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium firefox
-
-      - name: Run ${{ matrix.suite }} tests
-        run: npx playwright test tests/${{ matrix.suite }} --workers=5
-
+          path: ''
+      - if: always()
+      - with:
+      - name: playwright-report-ui
+      - path: playwright-report/
+      - retention-days: 30
       - name: Upload HTML report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-${{ matrix.suite }}
+          name: playwright-report-ui
           path: playwright-report/
           retention-days: 30
-          
       - name: Upload failure artifacts (traces, screenshots, videos)
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results-${{ matrix.suite }}
+          name: test-results-ui
+          path: test-results/
+          retention-days: 30
+  api-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm install
+      - run: npx playwright install --with-deps
+      - run: npx playwright test --project=api-tests
+        env:
+          API_URL: ${{ secrets.API_URL }}
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+          VALID_API_USERNAME: ${{ secrets.VALID_API_USERNAME }}
+          VALID_API_PASSWORD: ${{ secrets.VALID_API_PASSWORD }}
+          INVALID_API_USERNAME: ${{ secrets.INVALID_API_USERNAME }}
+          INVALID_API_PASSWORD: ${{ secrets.INVALID_API_PASSWORD }}
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-api
+          path: playwright-report/
+          retention-days: 30
+
+      - name: Upload failure artifacts (traces, screenshots, videos)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-api
           path: test-results/
           retention-days: 30
