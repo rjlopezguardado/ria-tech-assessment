@@ -96,7 +96,6 @@ A Playwright HTML report is also generated automatically after each run in `./pl
 ```bash
 npx playwright show-report
 ```
-ß
 ---
 
 ## Tech Stack
