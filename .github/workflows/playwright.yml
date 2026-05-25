@@ -1,38 +1,87 @@
 name: Playwright Tests
+
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
-  workflow_dispatch:
+    branches: [main, master]
+
 jobs:
   test:
-    timeout-minutes: 60
+    name: ${{ matrix.suite }} tests
+    timeout-minutes: 30
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [api, ui]
+
+    env:
+      CI: true
+      UI_URL: ${{ secrets.UI_URL }}
+      API_URL: ${{ secrets.API_URL }}
+      API_TOKEN: ${{ secrets.API_TOKEN }}
+      VALID_API_USERNAME: ${{ secrets.VALID_API_USERNAME }}
+      VALID_API_PASSWORD: ${{ secrets.VALID_API_PASSWORD }}
+      INVALID_API_USERNAME: ${{ secrets.INVALID_API_USERNAME }}
+      INVALID_API_PASSWORD: ${{ secrets.INVALID_API_PASSWORD }}
+      VALID_UI_USERNAME: ${{ secrets.VALID_UI_USERNAME }}
+      VALID_UI_PASSWORD: ${{ secrets.VALID_UI_PASSWORD }}
+      INVALID_UI_USERNAME: ${{ secrets.INVALID_UI_USERNAME }}
+      INVALID_UI_PASSWORD: ${{ secrets.INVALID_UI_PASSWORD }}
+
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-    - name: Install dependencies
-      run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: npx playwright test
-    - name: Generate Allure report
-      if: always()
-      run: npx allure generate allure-results --clean -o allure-report
-    - uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: allure-report
-        path: allure-report/
-        retention-days: 30
-    - uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: html-report
-        path: playwright-report/
-        retention-days: 30
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache Playwright browsers
+        if: matrix.suite == 'ui'
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright browsers
+        if: matrix.suite == 'ui' && steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium firefox
+
+      - name: Install Playwright system deps (cache hit)
+        if: matrix.suite == 'ui' && steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps
+
+      - name: Run ${{ matrix.suite }} tests
+        run: npx playwright test tests/${{ matrix.suite }}
+
+      - name: Upload HTML report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.suite }}
+          path: playwright-report/
+          retention-days: 30
+
+      - name: Upload JUnit results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-results-${{ matrix.suite }}
+          path: results.xml
+          retention-days: 30
+
+      - name: Upload failure artifacts (traces, screenshots, videos)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.suite }}
+          path: test-results/
+          retention-days: 30
