@@ -55,10 +55,6 @@ jobs:
         if: matrix.suite == 'ui' && steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium firefox
 
-      - name: Install Playwright system deps (cache hit)
-        if: matrix.suite == 'ui' && steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps
-
       - name: Run ${{ matrix.suite }} tests
         run: npx playwright test tests/${{ matrix.suite }}
 
@@ -69,15 +65,7 @@ jobs:
           name: playwright-report-${{ matrix.suite }}
           path: playwright-report/
           retention-days: 30
-
-      - name: Upload JUnit results
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: junit-results-${{ matrix.suite }}
-          path: results.xml
-          retention-days: 30
-
+          
       - name: Upload failure artifacts (traces, screenshots, videos)
         if: failure()
         uses: actions/upload-artifact@v4
