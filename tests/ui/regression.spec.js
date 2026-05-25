@@ -20,6 +20,14 @@ test.describe('Login Functionality', () => {
         await loginPage.login(process.env.INVALID_UI_USERNAME, process.env.INVALID_UI_PASSWORD);
         await loginPage.validateErrorMessage('Sorry, this user has been locked out.');
     });
+
+    test('invalid login should not navigate to inventory page', async ({ page }) => {
+        const pageManager = new PageManager(page);
+        const loginPage = pageManager.getLoginPage();
+        await page.goto('/');
+        await loginPage.login(process.env.INVALID_UI_USERNAME, process.env.INVALID_UI_PASSWORD);
+        await expect(page).not.toHaveURL(/inventory.html/);
+    });
 })
 
 test.describe('Inventory Functionality', () => {
