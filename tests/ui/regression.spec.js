@@ -17,7 +17,7 @@ test.describe('Login Functionality', () => {
         const pageManager = new PageManager(page);
         const loginPage = pageManager.getLoginPage();
         await page.goto('/');
-        await loginPage.login(process.env.LOCKED_UI_USERNAME, process.env.LOCKED_UI_PASSWORD);
+        await loginPage.login(process.env.INVALID_UI_USERNAME, process.env.INVALID_UI_PASSWORD);
         await loginPage.validateErrorMessage('Sorry, this user has been locked out.');
     });
 })

@@ -11,5 +11,7 @@ node_modules/
 allure-results/
 allure-report/
 
+.env
+
 # OS
 .DS_Store
