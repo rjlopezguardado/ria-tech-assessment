@@ -43,8 +43,8 @@ Create a `.env` file in the project root with the following variables:
 UI_URL=https://www.saucedemo.com
 VALID_UI_USERNAME=standard_user
 VALID_UI_PASSWORD=secret_sauce
-INVALID_UI_USERNAME=locked_out_user
-INVALID_UI_PASSWORD=wrongpassword
+LOCKED_UI_USERNAME=locked_out_user
+LOCKED_UI_PASSWORD=secret_sauce
 
 # API Testing
 API_URL=https://reqres.in
@@ -63,8 +63,8 @@ INVALID_API_PASSWORD=wrongpassword
 |---|---|
 | `npm test` | Run all tests (headless) |
 | `npm run test:headed` | Run all tests with browser visible |
-| `npm run ui-test` | Run UI tests only |
-| `npm run api-test` | Run API tests only |
+| `npm run test:ui` | Run UI tests only |
+| `npm run test:api` | Run API tests only |
 
 ---
 
@@ -91,39 +91,12 @@ The generated report is saved to `./allure-report/`.
 
 ### Playwright HTML Report
 
-To use the built-in Playwright HTML reporter instead, replace the `reporter` line in [playwright.config.js](playwright.config.js) with:
-
-```js
-reporter: 'html',
-```
-
-Then open the report with:
+A Playwright HTML report is also generated automatically after each run in `./playwright-report/`. Open it with:
 
 ```bash
 npx playwright show-report
 ```
-
----
-
-## Project Structure
-
-```
-├── tests/
-│   ├── ui/                  # UI test specs
-│   │   └── regression.spec.js
-│   ├── api/                 # API test specs
-│   │   └── reques.spec.js
-│   ├── pages/               # Page Object Model classes
-│   │   ├── LoginPage.js
-│   │   ├── InventoryPage.js
-│   │   └── PageManager.js
-│   ├── data/                # Test data
-│   └── fixtures/            # Playwright fixtures
-├── playwright.config.js     # Playwright configuration
-├── package.json
-└── .env                     # Environment variables (not committed)
-```
-
+ß
 ---
 
 ## Tech Stack

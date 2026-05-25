@@ -13,7 +13,10 @@ export class LoginPage {
         await this.passwordInput.fill(password);
         await this.loginButton.click();
     }
-    async validateErrorMessage(){
+    async validateErrorMessage(expectedText) {
         await expect(this.errorMessage).toBeVisible();
-    }   
+        if (expectedText) {
+            await expect(this.errorMessage).toContainText(expectedText);
+        }
+    }
 }

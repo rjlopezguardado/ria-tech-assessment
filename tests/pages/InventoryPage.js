@@ -20,20 +20,15 @@ export class InventoryPage {
 
     }
 
-    async validateTitle() {
-        await expect(this.title).toBeVisible();
+    async validateTitle(expectedText = 'Products') {
+        await expect(this.title).toHaveText(expectedText);
     }
 
     async addItemToCart() {
-        //Open the item details page
         await this.itemTitle.click();
-        //Validate that the item details page is displayed
         await expect(this.inventoryTitleName).toBeVisible();
-        //Add the item to the cart
-        await this.addToCartButton.click();
-        //Validate that the item was added to the cart
+        await this.addToCartButton.click();        
         await expect(this.removeButton).toBeVisible();
-        //Go back to the inventory page
         await this.goBackButton.click();
     }
 
@@ -52,9 +47,7 @@ export class InventoryPage {
     }   
 
     async addItemsToCart(itemName) {
-        //Add the item to the cart
         await this.page.locator(`[data-test="add-to-cart-${itemName}"]`).click();
-        //Validate that the item was added to the cart
         await expect(this.page.locator(`[data-test="remove-${itemName}"]`)).toBeVisible();
     }
 }
